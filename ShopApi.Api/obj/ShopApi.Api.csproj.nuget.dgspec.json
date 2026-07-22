@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\ShopApi.Api.csproj": {}
+    "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\ShopApi.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\ShopApi.Api.csproj": {
+    "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\ShopApi.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\ShopApi.Api.csproj",
+        "projectUniqueName": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\ShopApi.Api.csproj",
         "projectName": "ShopApi.Api",
-        "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\ShopApi.Api.csproj",
+        "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\ShopApi.Api.csproj",
         "packagesPath": "C:\\Users\\SPACE123\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\obj\\",
+        "outputPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -40,8 +40,8 @@
               "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Domain\\ShopApi.Domain.csproj": {
                 "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Domain\\ShopApi.Domain.csproj"
               },
-              "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj"
+              "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
+                "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj"
               }
             }
           }
@@ -1193,14 +1193,14 @@
         }
       }
     },
-    "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
+    "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
+        "projectUniqueName": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
         "projectName": "ShopApi.Infrastructure",
-        "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
+        "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\SPACE123\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\obj\\",
+        "outputPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1248,6 +1248,22 @@
         "net10.0": {
           "framework": "net10.0",
           "targetAlias": "net10.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[10.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[10.0.10, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[10.0.3, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

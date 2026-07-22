@@ -13,3 +13,4 @@ C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\S
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\refint\ShopApi.Application.dll
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi.Application.pdb
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ref\ShopApi.Application.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi.Application.sourcelink.json

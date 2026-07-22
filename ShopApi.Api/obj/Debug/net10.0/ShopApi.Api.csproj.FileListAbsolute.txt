@@ -37,3 +37,4 @@ C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\obj\Debug\net10.0\refint\Sh
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\obj\Debug\net10.0\ShopApi.Api.pdb
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\obj\Debug\net10.0\ShopApi.Api.genruntimeconfig.cache
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\obj\Debug\net10.0\ref\ShopApi.Api.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\obj\Debug\net10.0\ShopApi.Api.sourcelink.json
