@@ -1,0 +1,15 @@
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\bin\Debug\net10.0\ShopApi.Application.deps.json
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\bin\Debug\net10.0\ShopApi.Application.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\bin\Debug\net10.0\ShopApi.Application.pdb
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\bin\Debug\net10.0\ShopApi.Domain.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\bin\Debug\net10.0\ShopApi.Domain.pdb
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi.Application.csproj.AssemblyReference.cache
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi.Application.AssemblyInfoInputs.cache
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi.Application.AssemblyInfo.cs
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi.Application.csproj.CoreCompileInputs.cache
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi..5AA3E890.Up2Date
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi.Application.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\refint\ShopApi.Application.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ShopApi.Application.pdb
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Application\obj\Debug\net10.0\ref\ShopApi.Application.dll

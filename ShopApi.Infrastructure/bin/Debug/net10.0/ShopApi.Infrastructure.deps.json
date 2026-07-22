@@ -1,0 +1,56 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "ShopApi.Infrastructure/1.0.0": {
+        "dependencies": {
+          "ShopApi.Application": "1.0.0",
+          "ShopApi.Domain": "1.0.0"
+        },
+        "runtime": {
+          "ShopApi.Infrastructure.dll": {}
+        }
+      },
+      "ShopApi.Application/1.0.0": {
+        "dependencies": {
+          "ShopApi.Domain": "1.0.0"
+        },
+        "runtime": {
+          "ShopApi.Application.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "ShopApi.Domain/1.0.0": {
+        "runtime": {
+          "ShopApi.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ShopApi.Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ShopApi.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ShopApi.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
