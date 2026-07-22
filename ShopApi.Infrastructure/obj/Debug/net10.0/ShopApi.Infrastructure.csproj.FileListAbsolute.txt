@@ -16,3 +16,5 @@ C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Infrastructure\obj\Debug\net10.
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Infrastructure\obj\Debug\net10.0\ShopApi.Infrastructure.pdb
 c:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Infrastructure\obj\Debug\net10.0\ref\ShopApi.Infrastructure.dll
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Infrastructure\obj\Debug\net10.0\ShopApi.Infrastructure.sourcelink.json
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Infrastructure\bin\Debug\net10.0\ShopApi.Infrastructure.runtimeconfig.json
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Infrastructure\obj\Debug\net10.0\ShopApi.Infrastructure.genruntimeconfig.cache

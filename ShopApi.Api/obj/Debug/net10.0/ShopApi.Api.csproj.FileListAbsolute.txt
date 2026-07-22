@@ -38,3 +38,8 @@ C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\obj\Debug\net10.0\ShopApi.A
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\obj\Debug\net10.0\ShopApi.Api.genruntimeconfig.cache
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\obj\Debug\net10.0\ref\ShopApi.Api.dll
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\obj\Debug\net10.0\ShopApi.Api.sourcelink.json
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.Relational.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\bin\Debug\net10.0\Npgsql.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Api\bin\Debug\net10.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

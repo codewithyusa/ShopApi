@@ -2718,8 +2718,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj": {
-              "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj"
+            "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj": {
+              "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj"
             },
             "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Domain\\ShopApi.Domain.csproj": {
               "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Domain\\ShopApi.Domain.csproj"

@@ -34,14 +34,14 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj": {
-                "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj"
+              "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj": {
+                "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj"
               },
               "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Domain\\ShopApi.Domain.csproj": {
                 "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Domain\\ShopApi.Domain.csproj"
               },
-              "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
-                "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj"
+              "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj"
               }
             }
           }
@@ -66,6 +66,12 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[10.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[10.0.10, )"
             }
           },
           "imports": [
@@ -505,14 +511,14 @@
         }
       }
     },
-    "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj": {
+    "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj",
+        "projectUniqueName": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj",
         "projectName": "ShopApi.Application",
-        "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj",
+        "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj",
         "packagesPath": "C:\\Users\\SPACE123\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\obj\\",
+        "outputPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1193,14 +1199,14 @@
         }
       }
     },
-    "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
+    "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
         "projectName": "ShopApi.Infrastructure",
-        "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
+        "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\SPACE123\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1223,8 +1229,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj": {
-                "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj"
+              "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj": {
+                "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj"
               },
               "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Domain\\ShopApi.Domain.csproj": {
                 "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Domain\\ShopApi.Domain.csproj"
