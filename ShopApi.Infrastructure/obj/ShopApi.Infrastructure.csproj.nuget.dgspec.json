@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {}
+    "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {}
   },
   "projects": {
     "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Application\\ShopApi.Application.csproj": {
@@ -692,14 +692,14 @@
         }
       }
     },
-    "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
+    "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
         "projectName": "ShopApi.Infrastructure",
-        "projectPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
+        "projectPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\ShopApi.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\SPACE123\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\SPACE123\\Documents\\.net\\ShopApi\\ShopApi.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

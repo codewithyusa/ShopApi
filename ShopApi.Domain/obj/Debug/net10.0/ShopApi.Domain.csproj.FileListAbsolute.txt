@@ -9,3 +9,4 @@ C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Domain\obj\Debug\net10.0\ShopAp
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Domain\obj\Debug\net10.0\refint\ShopApi.Domain.dll
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Domain\obj\Debug\net10.0\ShopApi.Domain.pdb
 C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Domain\obj\Debug\net10.0\ref\ShopApi.Domain.dll
+C:\Users\SPACE123\Documents\.net\ShopApi\ShopApi.Domain\obj\Debug\net10.0\ShopApi.Domain.sourcelink.json
