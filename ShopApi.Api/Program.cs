@@ -30,6 +30,13 @@ builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 // Register auth services
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
+// Register JWT configuration and token service
+builder.Services.Configure<JwtOptions>(
+    builder.Configuration.GetSection("Jwt")
+);
+
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 // Register MediatR (scans Application assembly for commands/queries/handlers)
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(ShopApi.Application.Common.Result<,>).Assembly));
@@ -45,7 +52,7 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// OpenAPI
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
