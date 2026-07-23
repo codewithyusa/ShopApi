@@ -4,6 +4,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 using ShopApi.Api.ExceptionHandlers;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Interfaces;
@@ -114,6 +115,7 @@ if (app.Environment.IsDevelopment())
     await DataSeeder.SeedAsync(context);
 
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 // Configure HTTP pipeline
