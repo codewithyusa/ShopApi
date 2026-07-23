@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using ShopApi.Application.Behaviors;
 using ShopApi.Application.Interfaces;
 using ShopApi.Infrastructure.Persistence;
 using ShopApi.Infrastructure.Persistence.Repositories;
@@ -21,6 +24,17 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+
+// Register MediatR (scans Application assembly for commands/queries/handlers)
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(ShopApi.Application.Common.Result<,>).Assembly));
+
+// Register FluentValidation validators
+builder.Services.AddValidatorsFromAssembly(typeof(ShopApi.Application.Common.Result<,>).Assembly);
+
+// Pipeline behaviors — LoggingBehavior first so it wraps ValidationBehavior
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
