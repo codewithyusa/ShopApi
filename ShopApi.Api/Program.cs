@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Interfaces;
+using ShopApi.Infrastructure.Auth;
 using ShopApi.Infrastructure.Persistence;
 using ShopApi.Infrastructure.Persistence.Repositories;
 
@@ -24,6 +25,9 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+
+// Register auth services
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 // Register MediatR (scans Application assembly for commands/queries/handlers)
 builder.Services.AddMediatR(cfg =>
