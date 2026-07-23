@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShopApi.Application.Interfaces;
 using ShopApi.Infrastructure.Persistence;
+using ShopApi.Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,14 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("ShopDatabase")
     ));
+
+// Register repositories (scoped — matches ShopDbContext's lifetime)
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<ICouponRepository, CouponRepository>();
+builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
