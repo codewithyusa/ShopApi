@@ -31,4 +31,19 @@ public class AuthController(IMediator mediator) : ControllerBase
                 })
             });
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginCommand command, CancellationToken ct)
+    {
+        var result = await mediator.Send(command, ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: Ok,
+            onFailure: error => Unauthorized(new ProblemDetails
+            {
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Login failed",
+                Detail = error.Message
+            }));
+    }
 }
