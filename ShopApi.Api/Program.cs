@@ -1,6 +1,9 @@
-﻿using MediatR;
+﻿using System.Text;
+using MediatR;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using ShopApi.Api.ExceptionHandlers;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Interfaces;
@@ -19,7 +22,7 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
         builder.Configuration.GetConnectionString("ShopDatabase")
     ));
 
-// Register repositories (scoped — matches ShopDbContext's lifetime)
+// Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
@@ -37,18 +40,58 @@ builder.Services.Configure<JwtOptions>(
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// Register MediatR (scans Application assembly for commands/queries/handlers)
+// Configure JWT Authentication
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var jwtSecret = jwtSection["Secret"]!;
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtSection["Issuer"],
+        ValidAudience = jwtSection["Audience"],
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSecret)
+        )
+    };
+});
+
+builder.Services.AddAuthorization();
+
+// Register MediatR
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(ShopApi.Application.Common.Result<,>).Assembly));
+    cfg.RegisterServicesFromAssembly(
+        typeof(ShopApi.Application.Common.Result<,>).Assembly
+    ));
 
 // Register FluentValidation validators
-builder.Services.AddValidatorsFromAssembly(typeof(ShopApi.Application.Common.Result<,>).Assembly);
+builder.Services.AddValidatorsFromAssembly(
+    typeof(ShopApi.Application.Common.Result<,>).Assembly
+);
 
-// Pipeline behaviors — LoggingBehavior first so it wraps ValidationBehavior
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+// Pipeline behaviors
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(LoggingBehavior<,>)
+);
 
-// Global exception handling -> RFC 7807 ProblemDetails
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(ValidationBehavior<,>)
+);
+
+// Global exception handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -57,10 +100,10 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Must be registered early so it can catch exceptions from everything after it
+// Exception handling
 app.UseExceptionHandler();
 
-// Seed database in development environment
+// Seed database in development
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
@@ -73,9 +116,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// Configure HTTP request pipeline.
+// Configure HTTP pipeline
 app.UseHttpsRedirection();
 
+app.UseAuthentication(); // Must be before UseAuthorization
 app.UseAuthorization();
 
 app.MapControllers();
