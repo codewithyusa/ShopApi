@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using ShopApi.Api.ExceptionHandlers;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Interfaces;
 using ShopApi.Infrastructure.Auth;
@@ -40,10 +41,17 @@ builder.Services.AddValidatorsFromAssembly(typeof(ShopApi.Application.Common.Res
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+// Global exception handling -> RFC 7807 ProblemDetails
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// Must be registered early so it can catch exceptions from everything after it
+app.UseExceptionHandler();
 
 // Seed database in development environment
 if (app.Environment.IsDevelopment())
