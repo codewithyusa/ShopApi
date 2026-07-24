@@ -11,6 +11,7 @@ using ShopApi.Application.Interfaces;
 using ShopApi.Infrastructure.Auth;
 using ShopApi.Infrastructure.Persistence;
 using ShopApi.Infrastructure.Persistence.Repositories;
+using ShopApi.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +70,10 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+
+// Register Chapa payment service
+builder.Services.Configure<ChapaOptions>(builder.Configuration.GetSection("Chapa"));
+builder.Services.AddHttpClient<IChapaPaymentService, ChapaPaymentService>();
 
 // Register MediatR
 builder.Services.AddMediatR(cfg =>
