@@ -9,7 +9,8 @@ namespace ShopApi.Application.Orders.Commands;
 public class CreateOrderHandler(
     ICartRepository cart,
     IProductRepository products,
-    IOrderRepository orders)
+    IOrderRepository orders,
+    ICouponRepository coupons)
     : IRequestHandler<CreateOrderCommand, Result<OrderResponseDto, OrderError>>
 {
     public async Task<Result<OrderResponseDto, OrderError>> Handle(
@@ -19,7 +20,6 @@ public class CreateOrderHandler(
         if (cartItems.Count == 0)
             return Result<OrderResponseDto, OrderError>.Failure(OrderError.CartEmpty());
 
-        // Re-validate stock at checkout time — it may have changed since being added to cart.
         foreach (var item in cartItems)
         {
             var product = await products.GetByIdAsync(item.ProductId, ct);
@@ -27,23 +27,33 @@ public class CreateOrderHandler(
                 return Result<OrderResponseDto, OrderError>.Failure(OrderError.CartEmpty());
         }
 
+        decimal discountPercent = 0;
+        if (!string.IsNullOrWhiteSpace(command.CouponCode))
+        {
+            var coupon = await coupons.GetByCodeAsync(command.CouponCode, ct);
+            if (coupon is not null && coupon.IsActive && coupon.ExpirationDate >= DateTime.UtcNow)
+                discountPercent = coupon.DiscountPercentage;
+        }
+
         var orderItems = new List<OrderItem>();
-        decimal total = 0;
+        decimal subtotal = 0;
 
         foreach (var item in cartItems)
         {
             var product = await products.GetByIdAsync(item.ProductId, ct);
-            product!.Stock -= item.Quantity; // tracked entity — EF picks up this mutation on SaveChanges
+            product!.Stock -= item.Quantity;
 
             orderItems.Add(new OrderItem
             {
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
-                Price = product.Price // snapshot price at time of purchase
+                Price = product.Price
             });
 
-            total += product.Price * item.Quantity;
+            subtotal += product.Price * item.Quantity;
         }
+
+        var total = subtotal - (subtotal * discountPercent / 100m);
 
         var order = new Order
         {
@@ -57,7 +67,6 @@ public class CreateOrderHandler(
         foreach (var item in cartItems)
             await cart.RemoveAsync(item, ct);
 
-        // Single save — atomic across order creation, stock decrement, and cart clearing.
         await orders.SaveChangesAsync(ct);
 
         return Result<OrderResponseDto, OrderError>.Success(ToDto(order));
