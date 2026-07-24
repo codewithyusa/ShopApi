@@ -4,4 +4,4 @@ using ShopApi.Application.Orders.Dtos;
 
 namespace ShopApi.Application.Orders.Commands;
 
-public record CreateOrderCommand(int UserId) : IRequest<Result<OrderResponseDto, OrderError>>;
+public record CancelOrderCommand(int UserId, int OrderId) : IRequest<Result<OrderResponseDto, OrderError>>;
