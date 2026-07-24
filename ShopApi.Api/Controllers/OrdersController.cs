@@ -16,9 +16,9 @@ public class OrdersController(IMediator mediator) : ControllerBase
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub")!);
 
     [HttpPost]
-    public async Task<IActionResult> Checkout(CancellationToken ct)
+    public async Task<IActionResult> Checkout([FromBody] CheckoutRequest? request, CancellationToken ct)
     {
-        var result = await mediator.Send(new CreateOrderCommand(CurrentUserId), ct);
+        var result = await mediator.Send(new CreateOrderCommand(CurrentUserId, request?.CouponCode), ct);
 
         return result.Match<IActionResult>(
             onSuccess: order => CreatedAtAction(nameof(GetMyOrders), null, order),
@@ -52,3 +52,5 @@ public class OrdersController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetAllOrders(CancellationToken ct) =>
         Ok(await mediator.Send(new GetAllOrdersQuery(), ct));
 }
+
+public record CheckoutRequest(string? CouponCode);
