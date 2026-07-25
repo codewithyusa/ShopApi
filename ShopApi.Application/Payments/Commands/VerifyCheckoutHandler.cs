@@ -17,10 +17,7 @@ public class VerifyCheckoutHandler(IOrderRepository orders, IChapaPaymentService
             return Result<OrderResponseDto, PaymentError>.Failure(
                 PaymentError.VerificationFailed(command.TxRef));
 
-        // Find the order by its stored PaymentRef (set during InitiatePayment).
-        var allOrders = await orders.GetAllAsync(ct);
-        var order = allOrders.FirstOrDefault(o => o.PaymentRef == command.TxRef);
-
+        var order = await orders.GetByPaymentRefAsync(command.TxRef, ct);
         if (order is null)
             return Result<OrderResponseDto, PaymentError>.Failure(
                 PaymentError.VerificationFailed(command.TxRef));
