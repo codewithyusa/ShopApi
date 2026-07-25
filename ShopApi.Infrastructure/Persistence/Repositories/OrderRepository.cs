@@ -23,6 +23,11 @@ public class OrderRepository(ShopDbContext context) : IOrderRepository
             .AsNoTracking()
             .ToListAsync(ct);
 
+    public Task<Order?> GetByPaymentRefAsync(string paymentRef, CancellationToken ct) =>
+        context.Orders
+            .Include(o => o.Items).ThenInclude(i => i.Product)
+            .FirstOrDefaultAsync(o => o.PaymentRef == paymentRef, ct);
+
     public async Task AddAsync(Order order, CancellationToken ct) =>
         await context.Orders.AddAsync(order, ct);
 
