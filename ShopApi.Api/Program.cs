@@ -31,6 +31,7 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 
 // Register auth services
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
