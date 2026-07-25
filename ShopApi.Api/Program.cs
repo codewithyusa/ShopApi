@@ -71,9 +71,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Register Chapa payment service
-builder.Services.Configure<ChapaOptions>(builder.Configuration.GetSection("Chapa"));
-builder.Services.AddHttpClient<IChapaPaymentService, ChapaPaymentService>();
+// Register Chapa payment service — using FAKE implementation until real credentials are available.
+builder.Services.AddScoped<IChapaPaymentService, FakeChapaPaymentService>();
 
 // Register MediatR
 builder.Services.AddMediatR(cfg =>
