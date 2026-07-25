@@ -11,10 +11,10 @@ public class Order
     public string? PaymentRef { get; set; }
     public string PaymentStatus { get; set; } = "pending";
     public string OrderStatus { get; set; } = "pending";
+    public string? CouponCode { get; set; } // null if no coupon was applied
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    // Navigation properties
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
 }
