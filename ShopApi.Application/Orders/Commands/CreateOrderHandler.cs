@@ -59,7 +59,8 @@ public class CreateOrderHandler(
         {
             UserId = command.UserId,
             TotalAmount = total,
-            Items = orderItems
+            Items = orderItems,
+            CouponCode = discountPercent > 0 ? command.CouponCode : null
         };
 
         await orders.AddAsync(order, ct);
