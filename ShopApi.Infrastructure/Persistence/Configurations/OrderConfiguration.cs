@@ -27,6 +27,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasMaxLength(20)
             .HasDefaultValue("pending");
 
+        builder.Property(o => o.CouponCode)
+            .HasMaxLength(50);
+
         // An order's line items disappear with the order — but the order
         // itself is never cascade-deleted from User (see UserConfiguration).
         builder.HasMany(o => o.Items)
