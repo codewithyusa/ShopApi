@@ -1,4 +1,4 @@
-namespace ShopApi.Infrastructure.Services;
+namespace ShopApi.Application.Common;
 
 public static class PinGenerator
 {
