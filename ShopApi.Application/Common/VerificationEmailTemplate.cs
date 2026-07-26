@@ -1,4 +1,4 @@
-namespace ShopApi.Infrastructure.Services.EmailTemplates;
+namespace ShopApi.Application.Common;
 
 public static class VerificationEmailTemplate
 {
