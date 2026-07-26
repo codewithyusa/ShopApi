@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+
 using ShopApi.Api.ExceptionHandlers;
+using ShopApi.Api.Options;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Interfaces;
 using ShopApi.Infrastructure.Auth;
@@ -24,6 +26,7 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
         builder.Configuration.GetConnectionString("ShopDatabase")
     ));
 
+
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
@@ -33,8 +36,10 @@ builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 
+
 // Register auth services
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
 
 // Register JWT configuration and token service
 builder.Services.Configure<JwtOptions>(
@@ -42,6 +47,7 @@ builder.Services.Configure<JwtOptions>(
 );
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+
 
 // Configure JWT Authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -72,8 +78,18 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Register Chapa payment service — using FAKE implementation until real credentials are available.
+
+// Register Chapa payment service
 builder.Services.AddScoped<IChapaPaymentService, FakeChapaPaymentService>();
+
+
+// Register Email service
+builder.Services.Configure<SmtpOptions>(
+    builder.Configuration.GetSection("Smtp")
+);
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 // Register MediatR
 builder.Services.AddMediatR(cfg =>
@@ -81,10 +97,12 @@ builder.Services.AddMediatR(cfg =>
         typeof(ShopApi.Application.Common.Result<,>).Assembly
     ));
 
+
 // Register FluentValidation validators
 builder.Services.AddValidatorsFromAssembly(
     typeof(ShopApi.Application.Common.Result<,>).Assembly
 );
+
 
 // Pipeline behaviors
 builder.Services.AddTransient(
@@ -97,17 +115,22 @@ builder.Services.AddTransient(
     typeof(ValidationBehavior<,>)
 );
 
+
 // Global exception handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+
 // OpenAPI
 builder.Services.AddOpenApi();
 
+
 var app = builder.Build();
+
 
 // Exception handling
 app.UseExceptionHandler();
+
 
 // Seed database in development
 if (app.Environment.IsDevelopment())
@@ -123,10 +146,11 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+
 // Configure HTTP pipeline
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); // Must be before UseAuthorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
