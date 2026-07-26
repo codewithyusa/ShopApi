@@ -3,12 +3,20 @@ namespace ShopApi.Domain.Entities;
 public class User
 {
     public int Id { get; set; }
+
     public required string Name { get; set; }
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
+
     public string? Phone { get; set; }
     public string Role { get; set; } = "customer";
 
+    // Email verification
+    public bool IsEmailVerified { get; set; } = false;
+    public string? EmailVerificationCode { get; set; }
+    public DateTime? EmailVerificationExpires { get; set; }
+
+    // Password reset
     public string? ResetPasswordToken { get; set; }
     public DateTime? ResetPasswordExpires { get; set; }
 
