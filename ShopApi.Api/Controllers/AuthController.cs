@@ -59,7 +59,10 @@ public class AuthController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetProfile(CancellationToken ct)
     {
         var profile = await mediator.Send(new GetProfileQuery(CurrentUserId), ct);
-        return profile is not null ? Ok(profile) : NotFound();
+
+        return profile is not null 
+            ? Ok(profile) 
+            : NotFound();
     }
 
     [Authorize]
@@ -84,7 +87,10 @@ public class AuthController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> ChangePassword(ChangePasswordRequest request, CancellationToken ct)
     {
         var result = await mediator.Send(
-            new ChangePasswordCommand(CurrentUserId, request.CurrentPassword, request.NewPassword), ct);
+            new ChangePasswordCommand(
+                CurrentUserId,
+                request.CurrentPassword,
+                request.NewPassword), ct);
 
         return result.Match<IActionResult>(
             onSuccess: _ => NoContent(),
@@ -92,6 +98,50 @@ public class AuthController(IMediator mediator) : ControllerBase
             {
                 Status = StatusCodes.Status401Unauthorized,
                 Title = "Change password failed",
+                Detail = error.Message
+            }));
+    }
+
+    // Send email verification code
+    [Authorize]
+    [HttpPost("send-verification")]
+    public async Task<IActionResult> SendVerification(CancellationToken ct)
+    {
+        var result = await mediator.Send(
+            new SendVerificationEmailCommand(CurrentUserId), ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: _ => Ok(new
+            {
+                message = "Verification code sent."
+            }),
+            onFailure: error => BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Send failed",
+                Detail = error.Message
+            }));
+    }
+
+    // Verify email using code
+    [Authorize]
+    [HttpPost("verify-email")]
+    public async Task<IActionResult> VerifyEmail(
+        VerifyEmailRequest request,
+        CancellationToken ct)
+    {
+        var result = await mediator.Send(
+            new VerifyEmailCommand(CurrentUserId, request.Code), ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: _ => Ok(new
+            {
+                message = "Email verified."
+            }),
+            onFailure: error => BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Verification failed",
                 Detail = error.Message
             }));
     }
