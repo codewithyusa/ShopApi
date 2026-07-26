@@ -82,12 +82,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IChapaPaymentService, FakeChapaPaymentService>();
 
 
-// Register Email service
-builder.Services.Configure<SmtpOptions>(
-    builder.Configuration.GetSection("Smtp")
-);
-
-builder.Services.AddScoped<IEmailService, EmailService>();
+// Register Email service — using FAKE implementation until real SMTP credentials are available.
+// Logs the OTP/email content to console instead of actually sending it.
+builder.Services.AddScoped<IEmailService, FakeEmailService>();
 
 
 // Register MediatR
