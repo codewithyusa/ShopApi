@@ -4,13 +4,13 @@ using ShopApi.Application.Interfaces;
 
 namespace ShopApi.Application.Auth.Commands;
 
-public class SendVerificationEmailHandler(IUserRepository users, IEmailService email)
-    : IRequestHandler<SendVerificationEmailCommand, Result<bool, EmailVerificationError>>
+public class SendVerificationEmailByEmailHandler(IUserRepository users, IEmailService email)
+    : IRequestHandler<SendVerificationEmailByEmailCommand, Result<bool, EmailVerificationError>>
 {
     public async Task<Result<bool, EmailVerificationError>> Handle(
-        SendVerificationEmailCommand command, CancellationToken ct)
+        SendVerificationEmailByEmailCommand command, CancellationToken ct)
     {
-        var user = await users.GetByIdAsync(command.UserId, ct);
+        var user = await users.GetByEmailAsync(command.Email, ct);
         if (user is null)
             return Result<bool, EmailVerificationError>.Failure(EmailVerificationError.UserNotFound());
 

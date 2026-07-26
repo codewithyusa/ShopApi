@@ -1,10 +1,19 @@
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Options;
-using ShopApi.Api.Options;
 using ShopApi.Application.Interfaces;
 
 namespace ShopApi.Infrastructure.Services;
+
+public class SmtpOptions
+{
+    public required string Host { get; init; }
+    public int Port { get; init; } = 587;
+    public required string Username { get; init; }
+    public required string Password { get; init; }
+    public required string FromEmail { get; init; }
+    public string FromName { get; init; } = "ShopApi";
+}
 
 public class EmailService(IOptions<SmtpOptions> options) : IEmailService
 {

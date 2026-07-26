@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 using ShopApi.Api.ExceptionHandlers;
-using ShopApi.Api.Options;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Interfaces;
 using ShopApi.Infrastructure.Auth;
