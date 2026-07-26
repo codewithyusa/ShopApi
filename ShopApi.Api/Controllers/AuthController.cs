@@ -15,49 +15,106 @@ public class AuthController(IMediator mediator) : ControllerBase
     private int CurrentUserId =>
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub")!);
 
-    // Your existing actions:
-    // Signup
-    // Login
-    // GetProfile
-    // UpdateProfile
-    // ChangePassword
-
-
-    [Authorize]
-    [HttpPost("send-verification")]
-    public async Task<IActionResult> SendVerification(CancellationToken ct)
+    [HttpPost("signup")]
+    public async Task<IActionResult> Signup(SignupCommand command, CancellationToken ct)
     {
-        var result = await mediator.Send(
-            new SendVerificationEmailCommand(CurrentUserId), ct);
+        var result = await mediator.Send(command, ct);
 
         return result.Match<IActionResult>(
-            onSuccess: _ => Ok(new
+            onSuccess: user => CreatedAtAction(nameof(Signup), new { id = user.Id }, user),
+            onFailure: error => error.Code switch
             {
-                message = "Verification code sent."
-            }),
-            onFailure: error => BadRequest(new ProblemDetails
+                "email_exists" => Conflict(new ProblemDetails
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Title = "Signup failed",
+                    Detail = error.Message
+                }),
+                _ => BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Signup failed",
+                    Detail = error.Message
+                })
+            });
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginCommand command, CancellationToken ct)
+    {
+        var result = await mediator.Send(command, ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: Ok,
+            onFailure: error => error.Code switch
             {
-                Status = StatusCodes.Status400BadRequest,
-                Title = "Send failed",
+                "email_not_verified" => Unauthorized(new ProblemDetails
+                {
+                    Status = StatusCodes.Status401Unauthorized,
+                    Title = "Email not verified",
+                    Detail = error.Message
+                }),
+                _ => Unauthorized(new ProblemDetails
+                {
+                    Status = StatusCodes.Status401Unauthorized,
+                    Title = "Login failed",
+                    Detail = error.Message
+                })
+            });
+    }
+
+    [Authorize]
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile(CancellationToken ct)
+    {
+        var profile = await mediator.Send(new GetProfileQuery(CurrentUserId), ct);
+        return profile is not null ? Ok(profile) : NotFound();
+    }
+
+    [Authorize]
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile(UpdateProfileRequest request, CancellationToken ct)
+    {
+        var result = await mediator.Send(
+            new UpdateProfileCommand(CurrentUserId, request.Name, request.Phone), ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: Ok,
+            onFailure: error => NotFound(new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Update failed",
                 Detail = error.Message
             }));
     }
 
-
     [Authorize]
-    [HttpPost("verify-email")]
-    public async Task<IActionResult> VerifyEmail(
-        VerifyEmailRequest request,
-        CancellationToken ct)
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequest request, CancellationToken ct)
     {
         var result = await mediator.Send(
-            new VerifyEmailCommand(CurrentUserId, request.Code), ct);
+            new ChangePasswordCommand(CurrentUserId, request.CurrentPassword, request.NewPassword), ct);
 
         return result.Match<IActionResult>(
-            onSuccess: _ => Ok(new
+            onSuccess: _ => NoContent(),
+            onFailure: error => Unauthorized(new ProblemDetails
             {
-                message = "Email verified."
-            }),
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Change password failed",
+                Detail = error.Message
+            }));
+    }
+
+    // NOTE: no [Authorize] here — an unverified user has no JWT yet, so this
+    // must be reachable using just their email instead of CurrentUserId.
+    [HttpPost("verify-email")]
+    public async Task<IActionResult> VerifyEmail(VerifyEmailRequest request, CancellationToken ct)
+    {
+        var result = await mediator.Send(
+            new VerifyEmailByEmailCommand(request.Email, request.Code), ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: _ => Ok(new { message = "Email verified." }),
             onFailure: error => BadRequest(new ProblemDetails
             {
                 Status = StatusCodes.Status400BadRequest,
@@ -65,8 +122,26 @@ public class AuthController(IMediator mediator) : ControllerBase
                 Detail = error.Message
             }));
     }
+
+    // NOTE: also no [Authorize] — same reason. Useful if the code expires
+    // and the user needs a fresh one before they can verify/login.
+    [HttpPost("resend-verification")]
+    public async Task<IActionResult> ResendVerification(ResendVerificationRequest request, CancellationToken ct)
+    {
+        var result = await mediator.Send(
+            new SendVerificationEmailByEmailCommand(request.Email), ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: _ => Ok(new { message = "Verification code sent." }),
+            onFailure: error => BadRequest(new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Send failed",
+                Detail = error.Message
+            }));
+    }
 }
 
-
 // Outside the class
-public record VerifyEmailRequest(string Code);
+public record VerifyEmailRequest(string Email, string Code);
+public record ResendVerificationRequest(string Email);
