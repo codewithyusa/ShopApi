@@ -13,4 +13,7 @@ public sealed record AuthError(string Code, string Message)
 
     public static AuthError InvalidResetToken() =>
         new("invalid_reset_token", "Password reset token is invalid or expired.");
+
+    public static AuthError EmailNotVerified() =>
+        new("email_not_verified", "Please verify your email before logging in. A new code has been sent.");
 }
