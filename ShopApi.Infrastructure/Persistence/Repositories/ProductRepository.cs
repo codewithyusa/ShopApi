@@ -18,6 +18,31 @@ public class ProductRepository(ShopDbContext context) : IProductRepository
     public Task<List<Product>> GetByCategoryAsync(string category, CancellationToken ct) =>
         context.Products.AsNoTracking().Where(p => p.Category == category).ToListAsync(ct);
 
+    public Task<List<Product>> SearchAsync(
+        string? name, string? category, decimal? minPrice, decimal? maxPrice, bool? inStockOnly,
+        CancellationToken ct)
+    {
+        var query = context.Products.AsNoTracking().AsQueryable();
+
+        // ILike = case-insensitive LIKE on PostgreSQL; matches "shirt" against "T-Shirt".
+        if (!string.IsNullOrWhiteSpace(name))
+            query = query.Where(p => EF.Functions.ILike(p.Name, $"%{name}%"));
+
+        if (!string.IsNullOrWhiteSpace(category))
+            query = query.Where(p => p.Category == category);
+
+        if (minPrice.HasValue)
+            query = query.Where(p => p.Price >= minPrice.Value);
+
+        if (maxPrice.HasValue)
+            query = query.Where(p => p.Price <= maxPrice.Value);
+
+        if (inStockOnly == true)
+            query = query.Where(p => p.Stock > 0);
+
+        return query.ToListAsync(ct);
+    }
+
     public async Task AddAsync(Product product, CancellationToken ct) =>
         await context.Products.AddAsync(product, ct);
 
