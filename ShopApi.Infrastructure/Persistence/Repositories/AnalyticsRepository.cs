@@ -43,4 +43,46 @@ public class AnalyticsRepository(ShopDbContext context) : IAnalyticsRepository
 
         return result;
     }
+
+    public async Task<List<TopSellingProductDto>> GetTopSellingProductsAsync(int topN, CancellationToken ct)
+    {
+        // Only count items from paid orders — a pending/failed order hasn't actually "sold" anything yet.
+        return await context.OrderItems
+            .Where(oi => oi.Order.PaymentStatus == "paid")
+            .GroupBy(oi => new { oi.ProductId, oi.Product.Name, oi.Product.Image })
+            .Select(g => new TopSellingProductDto(
+                g.Key.ProductId,
+                g.Key.Name,
+                g.Key.Image,
+                g.Sum(oi => oi.Quantity),
+                g.Sum(oi => oi.Price * oi.Quantity)))
+            .OrderByDescending(x => x.TotalQuantitySold)
+            .Take(topN)
+            .ToListAsync(ct);
+    }
+
+    public async Task<List<CouponUsageDto>> GetCouponUsageAsync(CancellationToken ct)
+    {
+        // Discount isn't stored directly — it's implied by (line-item subtotal - final TotalAmount).
+        // Subtotal is computed in SQL via the projection below; the GroupBy runs in memory
+        // afterward since coupon usage tables are small and this keeps the query translatable.
+        var raw = await context.Orders
+            .Where(o => o.CouponCode != null)
+            .Select(o => new
+            {
+                o.CouponCode,
+                o.TotalAmount,
+                Subtotal = o.Items.Sum(i => i.Price * i.Quantity)
+            })
+            .ToListAsync(ct);
+
+        return raw
+            .GroupBy(o => o.CouponCode!)
+            .Select(g => new CouponUsageDto(
+                g.Key,
+                g.Count(),
+                g.Sum(o => o.Subtotal - o.TotalAmount)))
+            .OrderByDescending(c => c.UsageCount)
+            .ToList();
+    }
 }
