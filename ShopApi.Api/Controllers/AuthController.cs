@@ -146,6 +146,31 @@ public class AuthController(IMediator mediator, IWebHostEnvironment env) : Contr
             }));
     }
 
+    [AllowAnonymous]
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request, CancellationToken ct)
+    {
+        await mediator.Send(new ForgotPasswordCommand(request.Email), ct);
+        return Ok(new { message = "If that email is registered, a reset code has been sent." });
+    }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordRequest request, CancellationToken ct)
+    {
+        var result = await mediator.Send(
+            new ResetPasswordCommand(request.Email, request.Code, request.NewPassword), ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: _ => Ok(new { message = "Password has been reset. Please log in again." }),
+            onFailure: error => BadRequest(new ProblemDetails
+            {
+                Status = 400,
+                Title = "Reset failed",
+                Detail = error.Message
+            }));
+    }
+
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh(CancellationToken ct)
     {
@@ -196,3 +221,5 @@ public class AuthController(IMediator mediator, IWebHostEnvironment env) : Contr
 // Outside the class
 public record VerifyEmailRequest(string Email, string Code);
 public record ResendVerificationRequest(string Email);
+public record ForgotPasswordRequest(string Email);
+public record ResetPasswordRequest(string Email, string Code, string NewPassword);
