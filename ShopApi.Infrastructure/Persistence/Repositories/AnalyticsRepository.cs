@@ -46,19 +46,34 @@ public class AnalyticsRepository(ShopDbContext context) : IAnalyticsRepository
 
     public async Task<List<TopSellingProductDto>> GetTopSellingProductsAsync(int topN, CancellationToken ct)
     {
-        // Only count items from paid orders — a pending/failed order hasn't actually "sold" anything yet.
-        return await context.OrderItems
+        // Step 1: aggregate in SQL using only anonymous types and scalar sums —
+        // no record constructor inside the Select, which EF Core can't translate
+        // once a navigation-property GroupBy key is involved.
+        var raw = await context.OrderItems
             .Where(oi => oi.Order.PaymentStatus == "paid")
-            .GroupBy(oi => new { oi.ProductId, oi.Product.Name, oi.Product.Image })
-            .Select(g => new TopSellingProductDto(
-                g.Key.ProductId,
-                g.Key.Name,
-                g.Key.Image,
-                g.Sum(oi => oi.Quantity),
-                g.Sum(oi => oi.Price * oi.Quantity)))
+            .GroupBy(oi => oi.ProductId)
+            .Select(g => new
+            {
+                ProductId = g.Key,
+                TotalQuantitySold = g.Sum(oi => oi.Quantity),
+                TotalRevenue = g.Sum(oi => oi.Price * oi.Quantity)
+            })
             .OrderByDescending(x => x.TotalQuantitySold)
             .Take(topN)
             .ToListAsync(ct);
+
+        // Step 2: look up product names/images separately, then build the DTO in memory.
+        var productIds = raw.Select(r => r.ProductId).ToList();
+        var products = await context.Products
+            .Where(p => productIds.Contains(p.Id))
+            .ToDictionaryAsync(p => p.Id, ct);
+
+        return raw.Select(r => new TopSellingProductDto(
+            r.ProductId,
+            products.TryGetValue(r.ProductId, out var product) ? product.Name : "Unknown",
+            products.TryGetValue(r.ProductId, out var product2) ? product2.Image : "",
+            r.TotalQuantitySold,
+            r.TotalRevenue)).ToList();
     }
 
     public async Task<List<CouponUsageDto>> GetCouponUsageAsync(CancellationToken ct)
