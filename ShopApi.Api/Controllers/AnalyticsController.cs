@@ -17,4 +17,12 @@ public class AnalyticsController(IMediator mediator) : ControllerBase
     [HttpGet("daily-sales")]
     public async Task<IActionResult> GetDailySales([FromQuery] int days = 30, CancellationToken ct = default) =>
         Ok(await mediator.Send(new GetDailySalesQuery(days), ct));
+
+    [HttpGet("top-selling-products")]
+    public async Task<IActionResult> GetTopSellingProducts([FromQuery] int topN = 10, CancellationToken ct = default) =>
+        Ok(await mediator.Send(new GetTopSellingProductsQuery(topN), ct));
+
+    [HttpGet("coupon-usage")]
+    public async Task<IActionResult> GetCouponUsage(CancellationToken ct) =>
+        Ok(await mediator.Send(new GetCouponUsageQuery(), ct));
 }
