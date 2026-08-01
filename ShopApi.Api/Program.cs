@@ -13,7 +13,6 @@ using ShopApi.Infrastructure.Auth;
 using ShopApi.Infrastructure.Persistence;
 using ShopApi.Infrastructure.Persistence.Repositories;
 using ShopApi.Infrastructure.Services;
-using ShopApi.Infrastructure.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
