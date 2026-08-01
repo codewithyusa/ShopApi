@@ -12,6 +12,7 @@ public class ShopDbContext(DbContextOptions<ShopDbContext> options) : DbContext(
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<Coupon> Coupons => Set<Coupon>();
     public DbSet<Favorite> Favorites => Set<Favorite>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
