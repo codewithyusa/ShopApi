@@ -1,7 +1,6 @@
 using MediatR;
+using ShopApi.Application.Common;
 using ShopApi.Application.Interfaces;
-using ShopApi.Infrastructure.Services; // PinGenerator — same Application→Infrastructure caveat as SendVerificationEmailHandler
-using ShopApi.Infrastructure.Services.EmailTemplates;
 
 namespace ShopApi.Application.Auth.Commands;
 
@@ -12,8 +11,8 @@ public class ForgotPasswordHandler(IUserRepository users, IEmailService email)
     {
         var user = await users.GetByEmailAsync(command.Email, ct);
 
-        // Always return the same result whether or not the email exists —
-        // otherwise this endpoint becomes a way to test which emails are registered.
+        // Always return true whether or not the email exists — otherwise this
+        // endpoint becomes a way to test which emails are registered.
         if (user is null)
             return true;
 
@@ -22,10 +21,15 @@ public class ForgotPasswordHandler(IUserRepository users, IEmailService email)
         user.ResetPasswordExpires = DateTime.UtcNow.AddMinutes(15);
         await users.SaveChangesAsync(ct);
 
-        await email.SendAsync(
-            user.Email, "Reset your password",
-            PasswordResetEmailTemplate.Build(user.Name, code), ct);
+        await email.SendAsync(user.Email, "Reset your password", BuildEmailBody(user.Name, code), ct);
 
         return true;
     }
+
+    private static string BuildEmailBody(string name, string code) => $"""
+        <h2>Hi {name},</h2>
+        <p>We received a request to reset your password. Use this code:</p>
+        <h1 style="letter-spacing:4px">{code}</h1>
+        <p>This code expires in 15 minutes. If you didn't request this, ignore this email.</p>
+        """;
 }

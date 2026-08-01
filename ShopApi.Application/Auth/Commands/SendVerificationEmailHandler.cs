@@ -22,12 +22,15 @@ public class SendVerificationEmailHandler(IUserRepository users, IEmailService e
         user.EmailVerificationExpires = DateTime.UtcNow.AddMinutes(15);
         await users.SaveChangesAsync(ct);
 
-        await email.SendAsync(
-            user.Email,
-            "Verify your email",
-            VerificationEmailTemplate.Build(user.Name, code),
-            ct);
+        await email.SendAsync(user.Email, "Verify your email", BuildEmailBody(user.Name, code), ct);
 
         return Result<bool, EmailVerificationError>.Success(true);
     }
+
+    private static string BuildEmailBody(string name, string code) => $"""
+        <h2>Hi {name},</h2>
+        <p>Your verification code is:</p>
+        <h1 style="letter-spacing:4px">{code}</h1>
+        <p>This code expires in 15 minutes.</p>
+        """;
 }
