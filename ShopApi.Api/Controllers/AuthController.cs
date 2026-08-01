@@ -2,6 +2,7 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShopApi.Api.Auth;
 using ShopApi.Application.Auth.Commands;
 using ShopApi.Application.Auth.Dtos;
 using ShopApi.Application.Auth.Queries;
@@ -10,7 +11,7 @@ namespace ShopApi.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(IMediator mediator) : ControllerBase
+public class AuthController(IMediator mediator, IWebHostEnvironment env) : ControllerBase
 {
     private int CurrentUserId =>
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub")!);
@@ -45,18 +46,22 @@ public class AuthController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(command, ct);
 
         return result.Match<IActionResult>(
-            onSuccess: Ok,
+            onSuccess: dto =>
+            {
+                SetRefreshCookie(dto.RefreshToken!, dto.RefreshTokenExpiresAt!.Value);
+                return Ok(dto);
+            },
             onFailure: error => error.Code switch
             {
                 "email_not_verified" => Unauthorized(new ProblemDetails
                 {
-                    Status = StatusCodes.Status401Unauthorized,
+                    Status = 401,
                     Title = "Email not verified",
                     Detail = error.Message
                 }),
                 _ => Unauthorized(new ProblemDetails
                 {
-                    Status = StatusCodes.Status401Unauthorized,
+                    Status = 401,
                     Title = "Login failed",
                     Detail = error.Message
                 })
@@ -140,6 +145,52 @@ public class AuthController(IMediator mediator) : ControllerBase
                 Detail = error.Message
             }));
     }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(CancellationToken ct)
+    {
+        var rawToken = Request.Cookies[CookieAuthOptions.RefreshTokenCookieName];
+        if (string.IsNullOrWhiteSpace(rawToken))
+            return Unauthorized(new ProblemDetails
+            {
+                Status = 401,
+                Title = "Refresh failed",
+                Detail = "No refresh token present."
+            });
+
+        var result = await mediator.Send(new RefreshTokenCommand(rawToken), ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: dto =>
+            {
+                SetRefreshCookie(dto.RefreshToken!, dto.RefreshTokenExpiresAt!.Value);
+                return Ok(dto);
+            },
+            onFailure: error =>
+            {
+                Response.Cookies.Delete(CookieAuthOptions.RefreshTokenCookieName);
+                return Unauthorized(new ProblemDetails
+                {
+                    Status = 401,
+                    Title = "Refresh failed",
+                    Detail = error.Message
+                });
+            });
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(CancellationToken ct)
+    {
+        var rawToken = Request.Cookies[CookieAuthOptions.RefreshTokenCookieName];
+        await mediator.Send(new LogoutCommand(rawToken ?? string.Empty), ct);
+        Response.Cookies.Delete(CookieAuthOptions.RefreshTokenCookieName);
+        return NoContent();
+    }
+
+    private void SetRefreshCookie(string rawToken, DateTime expiresAt) =>
+        Response.Cookies.Append(
+            CookieAuthOptions.RefreshTokenCookieName, rawToken,
+            CookieAuthOptions.Build(expiresAt, env));
 }
 
 // Outside the class
