@@ -13,6 +13,7 @@ using ShopApi.Infrastructure.Auth;
 using ShopApi.Infrastructure.Persistence;
 using ShopApi.Infrastructure.Persistence.Repositories;
 using ShopApi.Infrastructure.Services;
+using ShopApi.Infrastructure.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,7 @@ builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 
 // Register auth services
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IRefreshTokenStore, EfRefreshTokenStore>();
 
 
 // Register JWT configuration and token service
