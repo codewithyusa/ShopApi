@@ -23,6 +23,16 @@ public class ProductsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetByCategory(string category, CancellationToken ct) =>
         Ok(await mediator.Send(new GetProductsByCategoryQuery(category), ct));
 
+    [HttpGet("search")]
+    public async Task<IActionResult> Search(
+        [FromQuery] string? name,
+        [FromQuery] string? category,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice,
+        [FromQuery] bool? inStockOnly,
+        CancellationToken ct) =>
+        Ok(await mediator.Send(new SearchProductsQuery(name, category, minPrice, maxPrice, inStockOnly), ct));
+
     [Authorize(Roles = "admin")]
     [HttpPost]
     public async Task<IActionResult> Create(CreateProductRequest request, CancellationToken ct)
