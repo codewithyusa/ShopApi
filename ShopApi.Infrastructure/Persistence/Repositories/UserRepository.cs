@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ShopApi.Application.Common;
 using ShopApi.Application.Interfaces;
 using ShopApi.Domain.Entities;
 
@@ -20,6 +21,21 @@ public class UserRepository(ShopDbContext context) : IUserRepository
 
     public Task<List<User>> GetAllAsync(CancellationToken ct) =>
         context.Users.AsNoTracking().ToListAsync(ct);
+
+    public async Task<(List<User> Items, int TotalCount)> GetAllPagedAsync(
+        PagedRequest request, CancellationToken ct)
+    {
+        var query = context.Users.AsNoTracking().OrderBy(u => u.Name);
+
+        var totalCount = await query.CountAsync(ct);
+
+        var items = await query
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync(ct);
+
+        return (items, totalCount);
+    }
 
     public Task DeleteAsync(User user, CancellationToken ct)
     {
