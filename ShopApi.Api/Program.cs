@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using HealthChecks.NpgSql;
 
 using ShopApi.Api.ExceptionHandlers;
 using ShopApi.Application.Behaviors;
@@ -118,6 +119,11 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 
+// Health checks — hits the actual DB, not just "is the process alive"
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("ShopDatabase")!, name: "postgres");
+
+
 // OpenAPI
 builder.Services.AddOpenApi();
 
@@ -151,5 +157,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Health check endpoint
+app.MapHealthChecks("/health");
 
 app.Run();
