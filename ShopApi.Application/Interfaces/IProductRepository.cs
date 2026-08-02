@@ -10,6 +10,9 @@ public interface IProductRepository
     Task<(List<Product> Items, int TotalCount)> GetPagedAsync(PagedRequest request, CancellationToken ct);
     Task<List<Product>> GetFeaturedAsync(CancellationToken ct);
     Task<List<Product>> GetByCategoryAsync(string category, CancellationToken ct);
+    Task<List<Product>> SearchAsync(
+        string? name, string? category, decimal? minPrice, decimal? maxPrice, bool? inStockOnly,
+        CancellationToken ct);
     Task<(List<Product> Items, int TotalCount)> SearchPagedAsync(
         string? name, string? category, decimal? minPrice, decimal? maxPrice, bool? inStockOnly,
         PagedRequest request, CancellationToken ct);
