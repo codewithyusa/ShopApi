@@ -2,6 +2,7 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using ShopApi.Api.Auth;
 using ShopApi.Application.Auth.Commands;
 using ShopApi.Application.Auth.Dtos;
