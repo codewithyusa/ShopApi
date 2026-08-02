@@ -1,4 +1,5 @@
 using MediatR;
+using ShopApi.Application.Common;
 using ShopApi.Application.Interfaces;
 using ShopApi.Application.Orders.Commands;
 using ShopApi.Application.Orders.Dtos;
@@ -6,11 +7,18 @@ using ShopApi.Application.Orders.Dtos;
 namespace ShopApi.Application.Orders.Queries;
 
 public class GetAllOrdersHandler(IOrderRepository orders)
-    : IRequestHandler<GetAllOrdersQuery, List<OrderResponseDto>>
+    : IRequestHandler<GetAllOrdersQuery, PagedResponse<OrderResponseDto>>
 {
-    public async Task<List<OrderResponseDto>> Handle(GetAllOrdersQuery query, CancellationToken ct)
+    public async Task<PagedResponse<OrderResponseDto>> Handle(GetAllOrdersQuery query, CancellationToken ct)
     {
-        var list = await orders.GetAllAsync(ct);
-        return list.Select(CreateOrderHandler.ToDto).ToList();
+        var (items, totalCount) = await orders.GetAllPagedAsync(query.Paging, ct);
+
+        return new PagedResponse<OrderResponseDto>
+        {
+            Items = items.Select(CreateOrderHandler.ToDto).ToList(),
+            TotalCount = totalCount,
+            Page = query.Paging.Page,
+            PageSize = query.Paging.PageSize
+        };
     }
 }
