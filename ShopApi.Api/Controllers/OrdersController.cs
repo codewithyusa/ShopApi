@@ -2,6 +2,7 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShopApi.Application.Common;
 using ShopApi.Application.Orders.Commands;
 using ShopApi.Application.Orders.Queries;
 
@@ -49,8 +50,9 @@ public class OrdersController(IMediator mediator) : ControllerBase
 
     [Authorize(Roles = "admin")]
     [HttpGet("all")]
-    public async Task<IActionResult> GetAllOrders(CancellationToken ct) =>
-        Ok(await mediator.Send(new GetAllOrdersQuery(), ct));
+    public async Task<IActionResult> GetAllOrders(
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default) =>
+        Ok(await mediator.Send(new GetAllOrdersQuery(new PagedRequest { Page = page, PageSize = pageSize }), ct));
 }
 
 public record CheckoutRequest(string? CouponCode);
