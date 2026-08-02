@@ -5,6 +5,8 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Http.Resilience;
+using Polly;
 using Scalar.AspNetCore;
 using HealthChecks.NpgSql;
 
@@ -12,6 +14,7 @@ using ShopApi.Api.ExceptionHandlers;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Interfaces;
 using ShopApi.Infrastructure.Auth;
+using ShopApi.Infrastructure.BackgroundJobs;
 using ShopApi.Infrastructure.Persistence;
 using ShopApi.Infrastructure.Persistence.Repositories;
 using ShopApi.Infrastructure.Services;
@@ -81,8 +84,35 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 
-// Register Chapa payment service
+// Register Chapa payment service — currently using the FAKE implementation
+// (no real HTTP calls, so no resilience pipeline needed for this one).
 builder.Services.AddScoped<IChapaPaymentService, FakeChapaPaymentService>();
+
+// Real Chapa HTTP client, pre-wired with retry + circuit breaker + timeout.
+// Not active yet — IChapaPaymentService above still points to the fake.
+// When real credentials are ready, change the line above to:
+//   builder.Services.AddScoped<IChapaPaymentService, ChapaPaymentService>();
+// and delete this registration's duplication (keep only the resilience one below).
+builder.Services.AddHttpClient<ChapaPaymentService>()
+    .AddResilienceHandler("chapa-pipeline", pipeline =>
+    {
+        pipeline.AddRetry(new HttpRetryStrategyOptions
+        {
+            MaxRetryAttempts = 3,
+            BackoffType = DelayBackoffType.Exponential,
+            Delay = TimeSpan.FromMilliseconds(500)
+        });
+
+        pipeline.AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions
+        {
+            FailureRatio = 0.5,
+            SamplingDuration = TimeSpan.FromSeconds(30),
+            MinimumThroughput = 5,
+            BreakDuration = TimeSpan.FromSeconds(15)
+        });
+
+        pipeline.AddTimeout(TimeSpan.FromSeconds(10));
+    });
 
 
 // Register Email service — using FAKE implementation until real SMTP credentials are available.
@@ -152,6 +182,17 @@ builder.Services.AddRateLimiter(options =>
 });
 
 
+// Output caching — for read-heavy, infrequently-changing endpoints (product listings)
+builder.Services.AddOutputCache(options =>
+{
+    options.AddPolicy("Products", p => p.Expire(TimeSpan.FromMinutes(2)).Tag("products"));
+});
+
+
+// Background jobs
+builder.Services.AddHostedService<RefreshTokenCleanupService>();
+
+
 // OpenAPI
 builder.Services.AddOpenApi();
 
@@ -184,6 +225,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
+app.UseOutputCache();
 
 app.MapControllers();
 
