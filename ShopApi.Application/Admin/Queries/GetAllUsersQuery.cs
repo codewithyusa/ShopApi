@@ -1,6 +1,7 @@
 using MediatR;
 using ShopApi.Application.Auth.Dtos;
+using ShopApi.Application.Common;
 
 namespace ShopApi.Application.Admin.Queries;
 
-public record GetAllUsersQuery : IRequest<List<UserResponseDto>>;
+public record GetAllUsersQuery(PagedRequest Paging) : IRequest<PagedResponse<UserResponseDto>>;
