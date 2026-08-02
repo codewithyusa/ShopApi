@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using ShopApi.Application.Common;
 using ShopApi.Application.Products.Commands;
 using ShopApi.Application.Products.Dtos;
 using ShopApi.Application.Products.Queries;
@@ -14,8 +15,9 @@ public class ProductsController(IMediator mediator, IOutputCacheStore outputCach
 {
     [HttpGet]
     [OutputCache(PolicyName = "Products")]
-    public async Task<IActionResult> GetAll(CancellationToken ct) =>
-        Ok(await mediator.Send(new GetAllProductsQuery(), ct));
+    public async Task<IActionResult> GetAll(
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default) =>
+        Ok(await mediator.Send(new GetAllProductsQuery(new PagedRequest { Page = page, PageSize = pageSize }), ct));
 
     [HttpGet("featured")]
     [OutputCache(PolicyName = "Products")]
@@ -33,8 +35,12 @@ public class ProductsController(IMediator mediator, IOutputCacheStore outputCach
         [FromQuery] decimal? minPrice,
         [FromQuery] decimal? maxPrice,
         [FromQuery] bool? inStockOnly,
-        CancellationToken ct) =>
-        Ok(await mediator.Send(new SearchProductsQuery(name, category, minPrice, maxPrice, inStockOnly), ct));
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken ct = default) =>
+        Ok(await mediator.Send(new SearchProductsQuery(
+            name, category, minPrice, maxPrice, inStockOnly,
+            new PagedRequest { Page = page, PageSize = pageSize }), ct));
 
     [Authorize(Roles = "admin")]
     [HttpPost]
