@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using ShopApi.Application.Products.Commands;
 using ShopApi.Application.Products.Dtos;
 using ShopApi.Application.Products.Queries;
@@ -9,13 +10,15 @@ namespace ShopApi.Api.Controllers;
 
 [ApiController]
 [Route("api/products")]
-public class ProductsController(IMediator mediator) : ControllerBase
+public class ProductsController(IMediator mediator, IOutputCacheStore outputCache) : ControllerBase
 {
     [HttpGet]
+    [OutputCache(PolicyName = "Products")]
     public async Task<IActionResult> GetAll(CancellationToken ct) =>
         Ok(await mediator.Send(new GetAllProductsQuery(), ct));
 
     [HttpGet("featured")]
+    [OutputCache(PolicyName = "Products")]
     public async Task<IActionResult> GetFeatured(CancellationToken ct) =>
         Ok(await mediator.Send(new GetFeaturedProductsQuery(), ct));
 
@@ -41,6 +44,9 @@ public class ProductsController(IMediator mediator) : ControllerBase
             request.Name, request.Description, request.Price, request.Image,
             request.Category, request.Color, request.Size, request.Stock, request.IsFeatured), ct);
 
+        if (result.IsSuccess)
+            await outputCache.EvictByTagAsync("products", ct);
+
         return result.Match<IActionResult>(
             onSuccess: p => CreatedAtAction(nameof(GetAll), new { id = p.Id }, p),
             onFailure: error => BadRequest(new ProblemDetails { Status = 400, Title = "Create failed", Detail = error.Message }));
@@ -51,6 +57,10 @@ public class ProductsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> UpdateStock(int id, UpdateStockRequest request, CancellationToken ct)
     {
         var result = await mediator.Send(new UpdateStockCommand(id, request.Stock), ct);
+
+        if (result.IsSuccess)
+            await outputCache.EvictByTagAsync("products", ct);
+
         return result.Match<IActionResult>(
             onSuccess: Ok,
             onFailure: error => NotFound(new ProblemDetails { Status = 404, Title = "Update failed", Detail = error.Message }));
@@ -61,6 +71,10 @@ public class ProductsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> ToggleFeatured(int id, CancellationToken ct)
     {
         var result = await mediator.Send(new ToggleFeaturedCommand(id), ct);
+
+        if (result.IsSuccess)
+            await outputCache.EvictByTagAsync("products", ct);
+
         return result.Match<IActionResult>(
             onSuccess: Ok,
             onFailure: error => NotFound(new ProblemDetails { Status = 404, Title = "Toggle failed", Detail = error.Message }));
@@ -71,6 +85,10 @@ public class ProductsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var result = await mediator.Send(new DeleteProductCommand(id), ct);
+
+        if (result.IsSuccess)
+            await outputCache.EvictByTagAsync("products", ct);
+
         return result.Match<IActionResult>(
             onSuccess: _ => NoContent(),
             onFailure: error => NotFound(new ProblemDetails { Status = 404, Title = "Delete failed", Detail = error.Message }));
