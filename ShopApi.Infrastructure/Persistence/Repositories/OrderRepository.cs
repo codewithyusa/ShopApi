@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ShopApi.Application.Common;
 using ShopApi.Application.Interfaces;
 using ShopApi.Domain.Entities;
 
@@ -22,6 +23,24 @@ public class OrderRepository(ShopDbContext context) : IOrderRepository
             .Include(o => o.Items)
             .AsNoTracking()
             .ToListAsync(ct);
+
+    public async Task<(List<Order> Items, int TotalCount)> GetAllPagedAsync(
+        PagedRequest request, CancellationToken ct)
+    {
+        var query = context.Orders
+            .Include(o => o.Items)
+            .AsNoTracking()
+            .OrderByDescending(o => o.CreatedAt);
+
+        var totalCount = await query.CountAsync(ct);
+
+        var items = await query
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync(ct);
+
+        return (items, totalCount);
+    }
 
     public Task<Order?> GetByPaymentRefAsync(string paymentRef, CancellationToken ct) =>
         context.Orders
