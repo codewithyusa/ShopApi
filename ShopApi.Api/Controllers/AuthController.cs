@@ -9,6 +9,7 @@ using ShopApi.Application.Auth.Queries;
 
 namespace ShopApi.Api.Controllers;
 
+[EnableRateLimiting("auth")]
 [ApiController]
 [Route("api/auth")]
 public class AuthController(IMediator mediator, IWebHostEnvironment env) : ControllerBase
