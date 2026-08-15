@@ -10,8 +10,7 @@ public class LoginHandler(
     IUserRepository users,
     IPasswordHasher hasher,
     ITokenService tokens,
-    IRefreshTokenStore refreshTokens,
-    IMediator mediator)
+    IRefreshTokenStore refreshTokens)
     : IRequestHandler<LoginCommand, Result<LoginResponseDto, AuthError>>
 {
     public async Task<Result<LoginResponseDto, AuthError>> Handle(
@@ -20,12 +19,6 @@ public class LoginHandler(
         var user = await users.GetByEmailAsync(command.Email, ct);
         if (user is null || !hasher.Verify(command.Password, user.PasswordHash))
             return Result<LoginResponseDto, AuthError>.Failure(AuthError.InvalidCredentials());
-
-        if (!user.IsEmailVerified)
-        {
-            await mediator.Send(new SendVerificationEmailCommand(user.Id), ct);
-            return Result<LoginResponseDto, AuthError>.Failure(AuthError.EmailNotVerified());
-        }
 
         var accessToken = tokens.GenerateAccessToken(user);
         var (rawRefreshToken, expiresAt) = tokens.GenerateRefreshToken();

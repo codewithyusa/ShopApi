@@ -83,16 +83,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
+});
 
-// Register Chapa payment service — currently using the FAKE implementation
-// (no real HTTP calls, so no resilience pipeline needed for this one).
 builder.Services.AddScoped<IChapaPaymentService, FakeChapaPaymentService>();
 
-// Real Chapa HTTP client, pre-wired with retry + circuit breaker + timeout.
-// Not active yet — IChapaPaymentService above still points to the fake.
-// When real credentials are ready, change the line above to:
-//   builder.Services.AddScoped<IChapaPaymentService, ChapaPaymentService>();
-// and delete this registration's duplication (keep only the resilience one below).
 builder.Services.AddHttpClient<ChapaPaymentService>()
     .AddResilienceHandler("chapa-pipeline", pipeline =>
     {
@@ -115,9 +116,9 @@ builder.Services.AddHttpClient<ChapaPaymentService>()
     });
 
 
-// Register Email service — using FAKE implementation until real SMTP credentials are available.
-// Logs the OTP/email content to console instead of actually sending it.
-builder.Services.AddScoped<IEmailService, FakeEmailService>();
+// Register Email service — using REAL SMTP implementation (Gmail).
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 // Register MediatR
@@ -219,14 +220,13 @@ if (app.Environment.IsDevelopment())
 }
 
 
-// Configure HTTP pipeline
+app.UseExceptionHandler();
+app.UseCors("AllowAngular");  
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
 app.UseOutputCache();
-
 app.MapControllers();
 
 // Health check endpoint

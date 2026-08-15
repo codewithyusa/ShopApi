@@ -6,7 +6,7 @@ using ShopApi.Domain.Entities;
 
 namespace ShopApi.Application.Auth.Commands;
 
-public class SignupHandler(IUserRepository users, IPasswordHasher hasher, IMediator mediator)
+public class SignupHandler(IUserRepository users, IPasswordHasher hasher)
     : IRequestHandler<SignupCommand, Result<UserResponseDto, AuthError>>
 {
     public async Task<Result<UserResponseDto, AuthError>> Handle(
@@ -21,13 +21,12 @@ public class SignupHandler(IUserRepository users, IPasswordHasher hasher, IMedia
             Name = command.Name,
             Email = command.Email,
             PasswordHash = hasher.Hash(command.Password),
-            Phone = command.Phone
+            Phone = command.Phone,
+            IsEmailVerified = true
         };
 
         await users.AddAsync(user, ct);
         await users.SaveChangesAsync(ct);
-
-        await mediator.Send(new SendVerificationEmailCommand(user.Id), ct);
 
         return Result<UserResponseDto, AuthError>.Success(
             new UserResponseDto(user.Id, user.Name, user.Email, user.Phone, user.Role));
