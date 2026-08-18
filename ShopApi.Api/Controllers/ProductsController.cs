@@ -24,6 +24,16 @@ public class ProductsController(IMediator mediator, IOutputCacheStore outputCach
     public async Task<IActionResult> GetFeatured(CancellationToken ct) =>
         Ok(await mediator.Send(new GetFeaturedProductsQuery(), ct));
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id, CancellationToken ct)
+    {
+        var result = await mediator.Send(new GetProductByIdQuery(id), ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: Ok,
+            onFailure: error => NotFound(new ProblemDetails { Status = 404, Title = "Not found", Detail = error.Message }));
+    }
+
     [HttpGet("category/{category}")]
     public async Task<IActionResult> GetByCategory(string category, CancellationToken ct) =>
         Ok(await mediator.Send(new GetProductsByCategoryQuery(category), ct));
