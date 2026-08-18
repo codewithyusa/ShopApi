@@ -29,7 +29,6 @@ public class PaymentsController(IMediator mediator) : ControllerBase
             });
     }
 
-    // Chapa calls this after payment completes — no auth, Chapa is the caller.
     [AllowAnonymous]
     [HttpGet("verify/{txRef}")]
     public async Task<IActionResult> Verify(string txRef, CancellationToken ct)
@@ -39,5 +38,16 @@ public class PaymentsController(IMediator mediator) : ControllerBase
         return result.Match<IActionResult>(
             onSuccess: Ok,
             onFailure: error => BadRequest(new ProblemDetails { Status = 400, Title = "Verification failed", Detail = error.Message }));
+    }
+
+    [AllowAnonymous]
+    [HttpGet("fake-checkout")]
+    public async Task<IActionResult> FakeCheckout([FromQuery] string txRef, CancellationToken ct)
+    {
+        var result = await mediator.Send(new VerifyCheckoutCommand(txRef), ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: _ => Redirect("http://localhost:4200/orders"),
+            onFailure: error => BadRequest(new ProblemDetails { Status = 400, Title = "Payment failed", Detail = error.Message }));
     }
 }
