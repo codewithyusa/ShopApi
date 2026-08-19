@@ -8,5 +8,6 @@ public interface IFavoriteRepository
     Task<Favorite?> GetAsync(int userId, int productId, CancellationToken ct);
     Task AddAsync(Favorite favorite, CancellationToken ct);
     Task RemoveAsync(Favorite favorite, CancellationToken ct);
+    Task DeleteByProductIdAsync(int productId, CancellationToken ct);
     Task SaveChangesAsync(CancellationToken ct);
 }

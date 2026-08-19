@@ -25,6 +25,11 @@ public class CartRepository(ShopDbContext context) : ICartRepository
         return Task.CompletedTask;
     }
 
+    public async Task DeleteByProductIdAsync(int productId, CancellationToken ct) =>
+        await context.CartItems
+            .Where(c => c.ProductId == productId)
+            .ExecuteDeleteAsync(ct);
+
     public Task SaveChangesAsync(CancellationToken ct) =>
         context.SaveChangesAsync(ct);
 }

@@ -4,7 +4,10 @@ using ShopApi.Application.Interfaces;
 
 namespace ShopApi.Application.Products.Commands;
 
-public class DeleteProductHandler(IProductRepository products)
+public class DeleteProductHandler(
+    IProductRepository products,
+    ICartRepository cart,
+    IFavoriteRepository favorites)
     : IRequestHandler<DeleteProductCommand, Result<bool, ProductError>>
 {
     public async Task<Result<bool, ProductError>> Handle(DeleteProductCommand command, CancellationToken ct)
@@ -12,6 +15,9 @@ public class DeleteProductHandler(IProductRepository products)
         var product = await products.GetByIdAsync(command.ProductId, ct);
         if (product is null)
             return Result<bool, ProductError>.Failure(ProductError.NotFound(command.ProductId));
+
+        await cart.DeleteByProductIdAsync(command.ProductId, ct);
+        await favorites.DeleteByProductIdAsync(command.ProductId, ct);
 
         await products.DeleteAsync(product, ct);
         await products.SaveChangesAsync(ct);

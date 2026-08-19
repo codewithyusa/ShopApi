@@ -8,5 +8,6 @@ public interface ICartRepository
     Task<CartItem?> GetItemAsync(int userId, int productId, CancellationToken ct);
     Task AddAsync(CartItem item, CancellationToken ct);
     Task RemoveAsync(CartItem item, CancellationToken ct);
+    Task DeleteByProductIdAsync(int productId, CancellationToken ct);
     Task SaveChangesAsync(CancellationToken ct);
 }

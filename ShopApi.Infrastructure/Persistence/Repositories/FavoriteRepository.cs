@@ -25,6 +25,11 @@ public class FavoriteRepository(ShopDbContext context) : IFavoriteRepository
         return Task.CompletedTask;
     }
 
+    public async Task DeleteByProductIdAsync(int productId, CancellationToken ct) =>
+        await context.Favorites
+            .Where(f => f.ProductId == productId)
+            .ExecuteDeleteAsync(ct);
+
     public Task SaveChangesAsync(CancellationToken ct) =>
         context.SaveChangesAsync(ct);
 }
