@@ -10,6 +10,9 @@ using Polly;
 using Scalar.AspNetCore;
 using HealthChecks.NpgSql;
 
+using Microsoft.AspNetCore.Identity;
+using ShopApi.Domain.Entities;
+
 using ShopApi.Api.ExceptionHandlers;
 using ShopApi.Application.Behaviors;
 using ShopApi.Application.Interfaces;
@@ -25,10 +28,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Register ShopDbContext with PostgreSQL
+// Register ShopDbContext with PostgreSQL
 builder.Services.AddDbContext<ShopDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("ShopDatabase")
     ));
+
+// ADD THIS BELOW ↓
+builder.Services.AddIdentityCore<User>(options =>
+{
+    options.Password.RequiredLength = 8;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireDigit = true;
+    options.Password.RequireNonAlphanumeric = true;
+
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.Lockout.AllowedForNewUsers = true;
+})
+.AddRoles<IdentityRole<int>>()
+.AddEntityFrameworkStores<ShopDbContext>();
 
 
 // Register repositories
@@ -210,10 +229,10 @@ if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
 
-    var context = scope.ServiceProvider
-        .GetRequiredService<ShopDbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-    await DataSeeder.SeedAsync(context);
+    await DataSeeder.SeedAsync(context, userManager);
 
     app.MapOpenApi();
     app.MapScalarApiReference();

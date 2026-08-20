@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ShopApi.Domain.Entities;
 
@@ -5,12 +6,28 @@ namespace ShopApi.Infrastructure.Persistence;
 
 public static class DataSeeder
 {
-    public static async Task SeedAsync(ShopDbContext context, CancellationToken ct = default)
+    public static async Task SeedAsync(ShopDbContext context, UserManager<User> userManager, CancellationToken ct = default)
     {
         await context.Database.MigrateAsync(ct);
 
+        // Seed admin user
+        if (await userManager.FindByEmailAsync("admin@shopapi.com") is null)
+        {
+            var admin = new User
+            {
+                Name = "Admin",
+                UserName = "admin@shopapi.com",
+                Email = "admin@shopapi.com",
+                Role = "admin",
+                IsEmailVerified = true
+            };
+
+            await userManager.CreateAsync(admin, "Admin@12345");
+        }
+
+        // Seed products
         if (await context.Products.AnyAsync(ct))
-            return; // already seeded
+            return;
 
         var products = new List<Product>
         {
