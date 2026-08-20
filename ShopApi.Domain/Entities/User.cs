@@ -1,12 +1,10 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace ShopApi.Domain.Entities;
 
-public class User
+public class User : IdentityUser<int>
 {
-    public int Id { get; set; }
-
     public required string Name { get; set; }
-    public required string Email { get; set; }
-    public required string PasswordHash { get; set; }
 
     public string? Phone { get; set; }
     public string Role { get; set; } = "customer";
