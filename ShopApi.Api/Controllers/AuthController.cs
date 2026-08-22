@@ -21,10 +21,38 @@ public class AuthController(IMediator mediator, IWebHostEnvironment env) : Contr
     [HttpPost("signup")]
     public async Task<IActionResult> Signup(SignupCommand command, CancellationToken ct)
     {
-        var result = await mediator.Send(command, ct);
+        // Force role to customer regardless of what was sent
+        var customerCommand = command with { Role = "customer" };
+        var result = await mediator.Send(customerCommand, ct);
 
         return result.Match<IActionResult>(
             onSuccess: user => CreatedAtAction(nameof(Signup), new { id = user.Id }, user),
+            onFailure: error => error.Code switch
+            {
+                "email_exists" => Conflict(new ProblemDetails
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Title = "Signup failed",
+                    Detail = error.Message
+                }),
+                _ => BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Signup failed",
+                    Detail = error.Message
+                })
+            });
+    }
+
+    [HttpPost("admin/signup")]
+    public async Task<IActionResult> AdminSignup(SignupCommand command, CancellationToken ct)
+    {
+        // Force role to admin regardless of what was sent
+        var adminCommand = command with { Role = "admin" };
+        var result = await mediator.Send(adminCommand, ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: user => CreatedAtAction(nameof(AdminSignup), new { id = user.Id }, user),
             onFailure: error => error.Code switch
             {
                 "email_exists" => Conflict(new ProblemDetails
@@ -112,8 +140,6 @@ public class AuthController(IMediator mediator, IWebHostEnvironment env) : Contr
             }));
     }
 
-    // NOTE: no [Authorize] here — an unverified user has no JWT yet, so this
-    // must be reachable using just their email instead of CurrentUserId.
     [HttpPost("verify-email")]
     public async Task<IActionResult> VerifyEmail(VerifyEmailRequest request, CancellationToken ct)
     {
@@ -130,8 +156,6 @@ public class AuthController(IMediator mediator, IWebHostEnvironment env) : Contr
             }));
     }
 
-    // NOTE: also no [Authorize] — same reason. Useful if the code expires
-    // and the user needs a fresh one before they can verify/login.
     [HttpPost("resend-verification")]
     public async Task<IActionResult> ResendVerification(ResendVerificationRequest request, CancellationToken ct)
     {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using ShopApi.Application.Common;
+using ShopApi.Application.Interfaces;
 using ShopApi.Application.Products.Commands;
 using ShopApi.Application.Products.Dtos;
 using ShopApi.Application.Products.Queries;
@@ -53,6 +54,27 @@ public class ProductsController(IMediator mediator, IOutputCacheStore outputCach
             new PagedRequest { Page = page, PageSize = pageSize }), ct));
 
     [Authorize(Roles = "admin")]
+    [HttpPost("upload-image")]
+    public async Task<IActionResult> UploadImage(
+        IFormFile file,
+        [FromServices] ICloudinaryService cloudinary,
+        CancellationToken ct)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new ProblemDetails
+            {
+                Status = 400,
+                Title = "No file",
+                Detail = "Please upload an image."
+            });
+
+        using var stream = file.OpenReadStream();
+        var url = await cloudinary.UploadImageAsync(stream, file.FileName, ct);
+
+        return Ok(new { url });
+    }
+
+    [Authorize(Roles = "admin")]
     [HttpPost]
     public async Task<IActionResult> Create(CreateProductRequest request, CancellationToken ct)
     {
@@ -66,6 +88,20 @@ public class ProductsController(IMediator mediator, IOutputCacheStore outputCach
         return result.Match<IActionResult>(
             onSuccess: p => CreatedAtAction(nameof(GetAll), new { id = p.Id }, p),
             onFailure: error => BadRequest(new ProblemDetails { Status = 400, Title = "Create failed", Detail = error.Message }));
+    }
+
+    [Authorize(Roles = "admin")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, UpdateProductRequest request, CancellationToken ct)
+    {
+        var result = await mediator.Send(new UpdateProductCommand(id, request), ct);
+
+        if (result.IsSuccess)
+            await outputCache.EvictByTagAsync("products", ct);
+
+        return result.Match<IActionResult>(
+            onSuccess: Ok,
+            onFailure: error => NotFound(new ProblemDetails { Status = 404, Title = "Update failed", Detail = error.Message }));
     }
 
     [Authorize(Roles = "admin")]

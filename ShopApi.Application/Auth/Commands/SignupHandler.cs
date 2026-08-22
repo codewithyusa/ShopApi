@@ -17,17 +17,19 @@ public class SignupHandler(UserManager<User> userManager)
             return Result<UserResponseDto, AuthError>.Failure(
                 AuthError.EmailAlreadyExists(command.Email));
 
+        var role = command.Role == "admin" ? "admin" : "customer";
+
         var user = new User
         {
             Name = command.Name,
-            UserName = command.Email,  // Identity requires UserName
+            UserName = command.Email,
             Email = command.Email,
             Phone = command.Phone,
+            Role = role,
             IsEmailVerified = true
         };
 
-        var result = await userManager.CreateAsync(user, command.Password); // hashing handled by Identity
-
+        var result = await userManager.CreateAsync(user, command.Password);
         if (!result.Succeeded)
         {
             var error = result.Errors.First().Description;
