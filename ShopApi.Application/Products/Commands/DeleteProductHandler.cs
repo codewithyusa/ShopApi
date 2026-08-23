@@ -7,7 +7,8 @@ namespace ShopApi.Application.Products.Commands;
 public class DeleteProductHandler(
     IProductRepository products,
     ICartRepository cart,
-    IFavoriteRepository favorites)
+    IFavoriteRepository favorites,
+    IOrderRepository orders)
     : IRequestHandler<DeleteProductCommand, Result<bool, ProductError>>
 {
     public async Task<Result<bool, ProductError>> Handle(DeleteProductCommand command, CancellationToken ct)
@@ -18,6 +19,7 @@ public class DeleteProductHandler(
 
         await cart.DeleteByProductIdAsync(command.ProductId, ct);
         await favorites.DeleteByProductIdAsync(command.ProductId, ct);
+        await orders.DeleteOrderItemsByProductIdAsync(command.ProductId, ct);
 
         await products.DeleteAsync(product, ct);
         await products.SaveChangesAsync(ct);

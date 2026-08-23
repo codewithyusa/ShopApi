@@ -11,5 +11,6 @@ public interface IOrderRepository
     Task<(List<Order> Items, int TotalCount)> GetAllPagedAsync(PagedRequest request, CancellationToken ct);
     Task<Order?> GetByPaymentRefAsync(string paymentRef, CancellationToken ct);
     Task AddAsync(Order order, CancellationToken ct);
+    Task DeleteOrderItemsByProductIdAsync(int productId, CancellationToken ct);
     Task SaveChangesAsync(CancellationToken ct);
 }

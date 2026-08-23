@@ -50,6 +50,15 @@ public class OrderRepository(ShopDbContext context) : IOrderRepository
     public async Task AddAsync(Order order, CancellationToken ct) =>
         await context.Orders.AddAsync(order, ct);
 
+    public async Task DeleteOrderItemsByProductIdAsync(int productId, CancellationToken ct)
+    {
+        var items = await context.OrderItems
+            .Where(i => i.ProductId == productId)
+            .ToListAsync(ct);
+        context.OrderItems.RemoveRange(items);
+        await context.SaveChangesAsync(ct);
+    }
+
     public Task SaveChangesAsync(CancellationToken ct) =>
         context.SaveChangesAsync(ct);
 }
