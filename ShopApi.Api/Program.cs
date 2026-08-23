@@ -58,12 +58,11 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 builder.Services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
-
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>(); // ← add here
 
 // Register auth services
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IRefreshTokenStore, EfRefreshTokenStore>();
-
 
 // Register JWT configuration and token service
 builder.Services.Configure<JwtOptions>(
