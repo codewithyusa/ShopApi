@@ -47,7 +47,7 @@ public class PaymentsController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(new VerifyCheckoutCommand(txRef), ct);
 
         return result.Match<IActionResult>(
-            onSuccess: _ => Redirect("http://localhost:4200/orders"),
+            onSuccess: _ => Redirect("http://localhost:4200/order-success"),
             onFailure: error => BadRequest(new ProblemDetails { Status = 400, Title = "Payment failed", Detail = error.Message }));
     }
 }
